@@ -30,7 +30,7 @@ import io
 # ── constants ──────────────────────────────────────────────────────────────────
 ADC_MAX         = 4095.0
 ADC_VREF        = 3.3
-BP_LOW          = 20
+BP_LOW          = 40
 BP_HIGH         = 450
 NOTCH_F0        = 50
 NOTCH_Q         = 30
@@ -911,10 +911,16 @@ async def analyze_dual(
     th1 = bicep_report.threshold_adc  / ADC_MAX * ADC_VREF
     th2 = tricep_report.threshold_adc / ADC_MAX * ADC_VREF
 
-    (car_series, avg_car, car_slope,
-     car_start, car_end,
-     car_level, car_trending) = _compute_car(
-        env1, env2, t, th1, th2, fs, step_s)
+    if is_bicep_curl:
+      (car_series, avg_car, car_slope,
+       car_start, car_end,
+       car_level, car_trending) = _compute_car(
+          env1, env2, t, th1, th2, fs, step_s)
+    else:
+        (car_series, avg_car, car_slope,
+        car_start, car_end,
+        car_level, car_trending) = _compute_car(
+            env2, env1, t, th2, th1, fs, step_s)
 
     # ── envelope correlation ─────────────────────────────────────────────────
     envelope_corr = _envelope_correlation(env_norm1, env_norm2)
